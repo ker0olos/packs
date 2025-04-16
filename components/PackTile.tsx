@@ -4,7 +4,7 @@
 import compact from "~/utils/compact";
 import { Approved } from "~/components/Approved";
 
-import { Download, User, Calendar } from "lucide-react";
+import { Download, Calendar } from "lucide-react";
 
 import type { PackWithCount } from "~/utils/types.ts";
 
