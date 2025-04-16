@@ -21,16 +21,14 @@ const View = ({ pack }: { pack: Pack }) => {
 
       <div className={"flex flex-col gap-8 mx-4 my-8"}>
         <p className={"uppercase font-bold text-base opacity-60"}>
-          {`${i18n("media")} (${pack.manifest.media?.new?.length ?? 0})`}
+          {`${i18n("media")} (${pack.manifest.media?.length ?? 0})`}
         </p>
         <Collection collection={pack.manifest.media} />
       </div>
 
       <div className={"flex flex-col gap-8 mx-4 my-8"}>
         <p className={"uppercase font-bold text-base opacity-60"}>
-          {`${i18n("characters")} (${
-            pack.manifest.characters?.new?.length ?? 0
-          })`}
+          {`${i18n("characters")} (${pack.manifest.characters?.length ?? 0})`}
         </p>
         <Collection collection={pack.manifest.characters} />
       </div>
@@ -99,7 +97,7 @@ const Collection = ({
 }: {
   collection: Pack["manifest"]["characters"] | Pack["manifest"]["media"];
 }) => {
-  if (!collection?.new?.length) {
+  if (!collection?.length) {
     return (
       <p className={"uppercase font-bold text-base opacity-60 text-center"}>
         {i18n("empty")}
@@ -107,8 +105,8 @@ const Collection = ({
     );
   }
 
-  const slice = collection.new.slice(0, 8);
-  const diff = collection.new.length - slice.length;
+  const slice = collection.slice(0, 8);
+  const diff = collection.length - slice.length;
 
   return (
     <div className={"flex flex-wrap gap-4"}>
