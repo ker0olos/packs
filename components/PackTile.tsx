@@ -73,12 +73,12 @@ const PackTile = ({ pack, index }: { pack: PackWithCount; index: number }) => {
             </div>
           )}
 
-          <p>{`•`}</p>
+          {/* <p>{`•`}</p> */}
 
-          <div className={"flex gap-1"}>
+          {/* <div className={"flex gap-1"}>
             <User className={"w-4 h-4 mt-0.5"} />
             <p>{`${pack.manifest.characters ?? 0} ${i18n("characters")}`}</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </a>

@@ -1,5 +1,6 @@
-import { ArrowUp, ArrowDown } from "lucide-react";
 import React, { HTMLAttributes } from "react";
+
+import { ArrowUp, ArrowDown } from "lucide-react";
 
 import type {
   CharacterSorting,

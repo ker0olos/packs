@@ -10,8 +10,6 @@ import nanoid from "~/utils/nanoid";
 
 import { getAccessToken } from "~/utils/oauth";
 
-import { getRating } from "~/utils/rating";
-
 import { getWebhook } from "~/utils/embeds";
 
 import { IImageInput, TEN_MB } from "~/components/ImageInput";
@@ -147,8 +145,8 @@ export async function POST(request: Request) {
       pack.image = data.image.url;
     }
 
-    pack.media = {};
-    pack.characters = {};
+    pack.media = [];
+    pack.characters = [];
 
     pack.maintainers = data.maintainers ?? [];
     pack.conflicts = data.conflicts ?? [];
@@ -158,69 +156,10 @@ export async function POST(request: Request) {
     });
 
     data.characters?.sort((a, b) => {
-      if (
-        a.media?.length &&
-        b?.media?.length &&
-        a.media[0].role !== b.media[0].role
-      ) {
-        const v = {
-          [CharacterRole.Main]: 0,
-          [CharacterRole.Supporting]: 1,
-          [CharacterRole.Background]: 2,
-        };
-
-        return v[a.media[0].role] - v[b.media[0].role];
-      } else {
-        let aRating: number;
-        let bRating: number;
-
-        if (a.popularity) {
-          aRating = getRating({
-            popularity: a.popularity ?? 0,
-          });
-        } else if (a.media?.[0]?.mediaId) {
-          const media = data.media?.find(
-            ({ id }) => a.media?.[0]?.mediaId === id
-          );
-
-          if (media) {
-            aRating = getRating({
-              popularity: media.popularity ?? 0,
-              role: a.media?.[0]?.role,
-            });
-          } else {
-            aRating = 1;
-          }
-        } else {
-          aRating = 1;
-        }
-
-        if (b.popularity) {
-          bRating = getRating({
-            popularity: b.popularity ?? 0,
-          });
-        } else if (b.media?.length) {
-          const media = data.media?.find(
-            ({ id }) => b.media?.[0]?.mediaId === id
-          );
-
-          if (media) {
-            bRating = getRating({
-              popularity: media.popularity ?? 0,
-              role: b.media?.[0]?.role,
-            });
-          } else {
-            bRating = 1;
-          }
-        } else {
-          bRating = 1;
-        }
-
-        return bRating - aRating;
-      }
+      return (b.rating || 1) - (a.rating || 1);
     });
 
-    pack.media!.new = await Promise.all(
+    pack.media = await Promise.all(
       data.media?.map(async (media) => {
         const url = media.images?.[0]?.file?.size
           ? await uploadImage({ file: media.images[0].file })
@@ -264,7 +203,7 @@ export async function POST(request: Request) {
       }) ?? []
     );
 
-    pack.characters!.new = await Promise.all(
+    pack.characters = await Promise.all(
       data.characters?.map(async (char) => {
         const url = char.images?.[0]?.file?.size
           ? await uploadImage({ file: char.images[0].file })
@@ -300,24 +239,17 @@ export async function POST(request: Request) {
           },
           (_, value) => (value !== null ? value : undefined)
         ),
+        validateStatus: (status) =>
+          status === 200 || status === 201 || status === 400,
       });
 
       if (response.status !== 201) {
         const { errors } = response.data;
 
-        return new Response(
-          JSON.stringify({
-            errors,
-            pack: {
-              characters: pack.characters?.new?.map(({ id }) => ({ id })),
-              media: pack.media?.new?.map(({ id }) => ({ id })),
-            },
-          }),
-          {
-            status: response.status,
-            headers: { "content-type": "application/json" },
-          }
-        );
+        return new Response(JSON.stringify({ errors }), {
+          status: response.status,
+          headers: { "content-type": "application/json" },
+        });
       }
 
       const body = getWebhook({

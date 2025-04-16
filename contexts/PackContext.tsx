@@ -81,6 +81,7 @@ export function PackProvider({
   );
   const [conflicts, setConflicts] = useState(pack.manifest.conflicts ?? []);
   const [characterData, setCharacterData] = useState<Character>({
+    rating: 1,
     name: { english: "" },
     id: "",
   });
@@ -97,11 +98,11 @@ export function PackProvider({
   const [charactersSortingOrder, setCharactersSortingOrder] =
     useState<SortingOrder>("desc");
   const [media, setMedia] = useState(
-    sortMedia(pack.manifest.media?.new ?? [], mediaSorting, mediaSortingOrder)
+    sortMedia(pack.manifest.media ?? [], mediaSorting, mediaSortingOrder)
   );
   const [characters, setCharacters] = useState(
     sortCharacters(
-      pack.manifest.characters?.new ?? [],
+      pack.manifest.characters ?? [],
       media,
       charactersSorting,
       charactersSortingOrder

@@ -1,5 +1,3 @@
-import { getRating } from "~/utils/rating";
-
 import type {
   CharacterSorting,
   DisaggregatedCharacter,
@@ -45,38 +43,8 @@ const sortByPopularity = (a: DisaggregatedMedia, b: DisaggregatedMedia) => {
   return popularityB - popularityA;
 };
 
-const sortByRating = (
-  a: DisaggregatedCharacter,
-  b: DisaggregatedCharacter,
-  media: Media[]
-) => {
-  const aPrimaryMedia = a.media?.[0];
-
-  const aPrimaryMediaRef = aPrimaryMedia
-    ? media.find(({ id }) => aPrimaryMedia.mediaId === id)
-    : undefined;
-
-  const aRating = a.popularity
-    ? getRating({ popularity: a.popularity })
-    : getRating({
-        popularity: aPrimaryMediaRef?.popularity ?? 0,
-        role: aPrimaryMediaRef ? aPrimaryMedia?.role : undefined,
-      });
-
-  const bPrimaryMedia = b.media?.[0];
-
-  const bPrimaryMediaRef = bPrimaryMedia
-    ? media.find(({ id }) => bPrimaryMedia.mediaId === id)
-    : undefined;
-
-  const bRating = b.popularity
-    ? getRating({ popularity: b.popularity })
-    : getRating({
-        popularity: bPrimaryMediaRef?.popularity ?? 0,
-        role: bPrimaryMediaRef ? bPrimaryMedia?.role : undefined,
-      });
-
-  return bRating - aRating;
+const sortByRating = (a: DisaggregatedCharacter, b: DisaggregatedCharacter) => {
+  return b.rating - a.rating;
 };
 
 const sortByMediaTitle = (
@@ -131,7 +99,7 @@ export const sortCharacters = (
       case "name":
         return sortByName(a, b);
       case "rating":
-        return sortByRating(a, b, media);
+        return sortByRating(a, b);
       case "media":
         return sortByMediaTitle(a, b, media);
       case "role":
