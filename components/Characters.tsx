@@ -6,8 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { hideDialog, showDialog } from "~/public/dialogs";
 
-import { getPopularity, getRating } from "~/utils/rating";
-
 import Notice from "~/components/Notice";
 import Dialog from "~/components/Dialog";
 import Star from "~/components/Star";
@@ -27,9 +25,10 @@ import { type Character, CharacterRole } from "~/utils/types";
 
 import nanoid from "~/utils/nanoid";
 
-import type { RequestData as Data } from "~/app/api/autogen/route";
 import { usePackContext } from "~/contexts/PackContext";
 import { sortCharacters } from "~/utils/sorting";
+
+import type { RequestData as Data } from "~/app/api/autogen/route";
 
 const defaultImage =
   "https://raw.githubusercontent.com/fable-community/images-proxy/main/default/default.svg";
@@ -64,12 +63,6 @@ const Characters = ({ visible }: { visible: boolean }) => {
   const primaryMediaRef = primaryMedia
     ? media.find(({ id }) => primaryMedia.mediaId === id)
     : undefined;
-
-  const rating = getRating({
-    popularity: signal.popularity ?? primaryMediaRef?.popularity ?? 0,
-    role:
-      !signal.popularity && primaryMediaRef ? primaryMedia?.role : undefined,
-  });
 
   const onCharacterUpdate = useCallback(() => {
     setDirty(true);
@@ -149,6 +142,7 @@ const Characters = ({ visible }: { visible: boolean }) => {
           className={"flex justify-start gap-2 bg-transparent"}
           onClick={() => {
             const item: Character = {
+              rating: 1,
               id: `${nanoid(4)}`,
               name: { english: "" },
               added: new Date().toISOString(),
@@ -237,12 +231,7 @@ const Characters = ({ visible }: { visible: boolean }) => {
             ? media.find(({ id }) => primaryMedia.mediaId === id)
             : undefined;
 
-          const rating = char.popularity
-            ? getRating({ popularity: char.popularity })
-            : getRating({
-                popularity: primaryMediaRef?.popularity ?? 0,
-                role: primaryMediaRef ? primaryMedia?.role : undefined,
-              });
+          const rating = char.rating;
 
           const date = char.updated ?? char.added;
 
@@ -259,10 +248,11 @@ const Characters = ({ visible }: { visible: boolean }) => {
 
           return (
             <div
+              data-id={characters[i].id}
+              key={characters[i].id}
               className={
                 "flex flex-row items-center p-2 gap-3 cursor-pointer hover:bg-highlight"
               }
-              key={characters[i].id}
               onClick={() => {
                 setCharacterData(characters[i]);
                 requestAnimationFrame(() => showDialog("characters"));
@@ -464,51 +454,51 @@ const Characters = ({ visible }: { visible: boolean }) => {
                         "w-[28px] h-auto cursor-pointer transition-all duration-250 fill-fable"
                       }
                       onClick={() => {
-                        signal.popularity = getPopularity(1);
+                        signal.rating = 1;
                         onCharacterUpdate();
                         forceUpdate();
                       }}
                     />
                     <Star
                       className={[
-                        rating >= 2 ? "fill-fable" : "fill-disabled",
+                        signal.rating >= 2 ? "fill-fable" : "fill-disabled",
                         "w-[28px] h-auto cursor-pointer transition-all duration-250",
                       ].join(" ")}
                       onClick={() => {
-                        signal.popularity = getPopularity(2);
+                        signal.rating = 2;
                         onCharacterUpdate();
                         forceUpdate();
                       }}
                     />
                     <Star
                       className={[
-                        rating >= 3 ? "fill-fable" : "fill-disabled",
+                        signal.rating >= 3 ? "fill-fable" : "fill-disabled",
                         "w-[28px] h-auto cursor-pointer transition-all duration-250",
                       ].join(" ")}
                       onClick={() => {
-                        signal.popularity = getPopularity(3);
+                        signal.rating = 3;
                         onCharacterUpdate();
                         forceUpdate();
                       }}
                     />
                     <Star
                       className={[
-                        rating >= 4 ? "fill-fable" : "fill-disabled",
+                        signal.rating >= 4 ? "fill-fable" : "fill-disabled",
                         "w-[28px] h-auto cursor-pointer transition-all duration-250",
                       ].join(" ")}
                       onClick={() => {
-                        signal.popularity = getPopularity(4);
+                        signal.rating = 4;
                         onCharacterUpdate();
                         forceUpdate();
                       }}
                     />
                     <Star
                       className={[
-                        rating >= 5 ? "fill-fable" : "fill-disabled",
+                        signal.rating >= 5 ? "fill-fable" : "fill-disabled",
                         "w-[28px] h-auto cursor-pointer transition-all duration-250",
                       ].join(" ")}
                       onClick={() => {
-                        signal.popularity = getPopularity(5);
+                        signal.rating = 5;
                         onCharacterUpdate();
                         forceUpdate();
                       }}

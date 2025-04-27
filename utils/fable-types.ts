@@ -1,45 +1,45 @@
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export enum MediaType {
-  Anime = 'ANIME',
-  Manga = 'MANGA',
-  Other = 'OTHER',
+  Anime = "ANIME",
+  Manga = "MANGA",
+  Other = "OTHER",
 }
 
 export enum MediaFormat {
-  TV = 'TV',
-  TvShort = 'TV_SHORT',
-  Movie = 'MOVIE',
-  Special = 'SPECIAL',
-  OVA = 'OVA',
-  ONA = 'ONA',
-  Music = 'MUSIC',
-  Manga = 'MANGA',
-  Novel = 'NOVEL',
-  OneShot = 'ONE_SHOT',
-  VideoGame = 'VIDEO_GAME',
+  TV = "TV",
+  TvShort = "TV_SHORT",
+  Movie = "MOVIE",
+  Special = "SPECIAL",
+  OVA = "OVA",
+  ONA = "ONA",
+  Music = "MUSIC",
+  Manga = "MANGA",
+  Novel = "NOVEL",
+  OneShot = "ONE_SHOT",
+  VideoGame = "VIDEO_GAME",
 }
 
 export enum MediaRelation {
-  Adaptation = 'ADAPTATION',
-  Prequel = 'PREQUEL',
-  Sequel = 'SEQUEL',
-  Parent = 'PARENT',
-  Contains = 'CONTAINS',
-  SideStory = 'SIDE_STORY',
+  Adaptation = "ADAPTATION",
+  Prequel = "PREQUEL",
+  Sequel = "SEQUEL",
+  Parent = "PARENT",
+  Contains = "CONTAINS",
+  SideStory = "SIDE_STORY",
   // Character = 'CHARACTER',
   // Summary = 'SUMMARY',
   // Alternative = 'ALTERNATIVE',
-  SpinOff = 'SPIN_OFF',
-  Other = 'OTHER',
+  SpinOff = "SPIN_OFF",
+  Other = "OTHER",
   // Source = 'SOURCE',
   // Compilation = 'COMPILATION',
 }
 
 export enum CharacterRole {
-  Main = 'MAIN',
-  Supporting = 'SUPPORTING',
-  Background = 'BACKGROUND',
+  Main = "MAIN",
+  Supporting = "SUPPORTING",
+  Background = "BACKGROUND",
 }
 
 export type Alias = {
@@ -88,16 +88,19 @@ export interface Media {
   };
 }
 
-export type DisaggregatedMedia = Modify<Media, {
-  relations?: {
-    relation: MediaRelation;
-    mediaId: string;
-  }[];
-  characters?: {
-    role: CharacterRole;
-    characterId: string;
-  }[];
-}>;
+export type DisaggregatedMedia = Modify<
+  Media,
+  {
+    relations?: {
+      relation: MediaRelation;
+      mediaId: string;
+    }[];
+    characters?: {
+      role: CharacterRole;
+      characterId: string;
+    }[];
+  }
+>;
 
 export interface Character {
   id: string;
@@ -106,7 +109,7 @@ export interface Character {
   added?: string;
   updated?: string;
   description?: string;
-  popularity?: number;
+  rating: number;
   gender?: string;
   age?: string;
   images?: Image[];
@@ -119,16 +122,19 @@ export interface Character {
   };
 }
 
-export type DisaggregatedCharacter = Modify<Character, {
-  media?: {
-    role: CharacterRole;
-    mediaId: string;
-  }[];
-}>;
+export type DisaggregatedCharacter = Modify<
+  Character,
+  {
+    media?: {
+      role: CharacterRole;
+      mediaId: string;
+    }[];
+  }
+>;
 
 export type Pool = {
   [key: string]: {
-    'ALL': { id: string; mediaId: string; rating: number }[];
+    ALL: { id: string; mediaId: string; rating: number }[];
     [CharacterRole.Main]: { id: string; mediaId: string; rating: number }[];
     [CharacterRole.Supporting]: {
       id: string;
@@ -155,10 +161,6 @@ export interface Manifest {
   private?: boolean;
   maintainers?: string[];
   conflicts?: string[];
-  media?: {
-    new?: DisaggregatedMedia[];
-  };
-  characters?: {
-    new?: DisaggregatedCharacter[];
-  };
+  media?: DisaggregatedMedia[];
+  characters?: DisaggregatedCharacter[];
 }

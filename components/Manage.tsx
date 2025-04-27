@@ -103,18 +103,8 @@ const ManageContent = (props: { pack: Pack; user: User }) => {
           setError(text);
           console.error(text);
         } else {
-          const { errors, pack } = JSON.parse(text) as {
-            pack: {
-              media?: { id: string }[];
-              characters?: { id: string }[];
-            };
-            errors: {
-              instancePath: string;
-              keyword: string;
-              message: string;
-              params: { limit?: number };
-              schemaPath: string;
-            }[];
+          const { errors } = JSON.parse(text) as {
+            errors: { path: string[]; message: string }[];
           };
 
           document
@@ -127,32 +117,19 @@ const ManageContent = (props: { pack: Pack; user: User }) => {
 
           console.error(errors);
 
-          errors.forEach((err) => {
-            if (typeof err === "string") {
-              setError(err);
-              console.error(err);
-            } else {
-              const path = err.instancePath.substring(1).split("/");
+          errors.forEach(({ path }) => {
+            if (path[0] === "media" || path[0] === "characters") {
+              const i = parseInt(path[1]);
 
-              console.error(path);
+              const item =
+                path[0] === "characters" ? pack.characters![i] : pack.media![i];
 
-              if (path[0] === "media" || path[0] === "characters") {
-                if (path[1] === "new") {
-                  const i = parseInt(path[2]);
+              const child = document.querySelector(`[data-id="${item.id}"]`);
 
-                  const item =
-                    path[0] === "characters"
-                      ? pack.characters![i]
-                      : pack.media![i];
-
-                  const child = document.querySelector(`._${item.id}`);
-
-                  setTimeout(() => {
-                    child?.setAttribute("shake", "true");
-                    child?.setAttribute("invalid", "true");
-                  }, 100);
-                }
-              }
+              setTimeout(() => {
+                child?.setAttribute("shake", "true");
+                child?.setAttribute("invalid", "true");
+              }, 100);
             }
           });
         }
@@ -273,28 +250,6 @@ const ManageContent = (props: { pack: Pack; user: User }) => {
               </i>
               <Clipboard className={"w-[18px] h-[18px] cursor-pointer"} />
             </div>
-
-            {/* <button
-              className={"bg-grey text-white py-2 cursor-pointer"}
-              onClick={() => {
-                const blob = new Blob([JSON.stringify(props.pack)], {
-                  type: "application/json",
-                });
-                const url = URL.createObjectURL(blob);
-
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = `${props.pack.manifest.id}.json`;
-                document.body.appendChild(link);
-                link.click();
-
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-              }}
-            >
-              <Download className={"w-[18px] h-[18px] mr-1"} />
-              Export
-            </button> */}
 
             <div className={"flex flex-col grow gap-2"}>
               <label className={"uppercase text-[0.8rem] text-disabled"}>

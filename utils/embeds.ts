@@ -60,7 +60,7 @@ export const getWebhook = ({
     return webhook;
   }
 
-  pack.characters?.new?.forEach((a) => {
+  pack.characters?.forEach((a) => {
     const embed: Embed = {};
 
     let media: string | undefined = undefined;
@@ -70,8 +70,8 @@ export const getWebhook = ({
     }
 
     if (a.media?.[0]?.mediaId) {
-      media = pack.media?.new?.find((m) => m.id === a.media?.[0]?.mediaId)
-        ?.title.english;
+      media = pack.media?.find((m) => m.id === a.media?.[0]?.mediaId)?.title
+        .english;
     }
 
     if (a.gender && a.age) {
@@ -98,7 +98,7 @@ export const getWebhook = ({
       ];
     }
 
-    const b = old.characters?.new?.find((b) => a.id === b.id);
+    const b = old.characters?.find((b) => a.id === b.id);
 
     if (!b || JSON.stringify(a) !== JSON.stringify(b)) {
       webhook.embeds!.push(embed);

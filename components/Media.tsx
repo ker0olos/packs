@@ -211,6 +211,7 @@ const Media = ({ visible }: { visible: boolean }) => {
 
           return (
             <div
+              data-id={media[i].id}
               key={media[i].id}
               className={
                 "flex flex-row items-center p-2 gap-3 cursor-pointer hover:bg-highlight"
