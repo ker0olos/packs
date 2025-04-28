@@ -267,6 +267,7 @@ const Media = ({ visible }: { visible: boolean }) => {
                 const i = media.findIndex(({ id }) => signal.id === id);
 
                 if (i > -1 && confirm(i18n("deleteMedia"))) {
+                  setDirty(true);
                   media.splice(i, 1);
                   forceUpdate();
                   requestAnimationFrame(() => hideDialog("media"));

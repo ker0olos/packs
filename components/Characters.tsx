@@ -330,6 +330,7 @@ const Characters = ({ visible }: { visible: boolean }) => {
                     );
 
                     if (i > -1 && confirm(i18n("deleteCharacter"))) {
+                      setDirty(true);
                       characters.splice(i, 1);
                       setCharacters([...characters]);
                       forceUpdate();
