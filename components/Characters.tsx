@@ -407,7 +407,7 @@ const Characters = ({ visible }: { visible: boolean }) => {
                   className={"grow"}
                   label={i18n("primaryMedia")}
                   data-warning={!signal.media?.length}
-                  defaultValue={signal.media?.[0]?.mediaId}
+                  defaultValue={signal.media?.[0]?.mediaId ?? ""}
                   list={media.reduce((acc, media) => {
                     return media.title.english
                       ? { ...acc, [media.title.english]: media.id }
