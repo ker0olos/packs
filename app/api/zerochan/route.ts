@@ -45,7 +45,8 @@ export async function POST(request: Request) {
 
     return new Response(null, { status: _res.status });
   } catch (error: unknown) {
-    return new Response(JSON.stringify({ error }), {
+    console.error("An error occurred:", error);
+    return new Response(JSON.stringify({ message: "An internal server error occurred." }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
