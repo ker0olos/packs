@@ -35,7 +35,7 @@ const Profile = ({
         className={
           "w-[24px] h-auto aspect-square bg-grey object-center object-cover rounded-full"
         }
-        src={`https://discord-probe.deno.dev/avatar/${id}`}
+        src={`/api/avatar/${id}`}
       />
 
       <div className={"flex flex-col"}>
@@ -83,9 +83,7 @@ const Maintainers = ({
   useEffect(() => {
     Promise.all(
       [owner, ...maintainers].map(async (id) => {
-        const response = await fetch(
-          `https://discord-probe.deno.dev/user/${id}`
-        );
+        const response = await fetch(`/api/probe/${id}`);
 
         return response.json() as Promise<User>;
       })

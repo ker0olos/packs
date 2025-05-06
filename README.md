@@ -24,6 +24,7 @@ npm run dev
 
 - DISCORD_CLIENT_ID: a discord oauth client id
 - DISCORD_CLIENT_SECRET: a discord oauth client secret
+- BOT_TOKEN: a discord bot token
 - API_ENDPOINT: an endpoint for a self-hosted instance of
   [Fable](https://github.com/ker0olos/fable)
 
