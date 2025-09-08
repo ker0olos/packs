@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 
-import TextInput from "~/components/TextInput";
+import { ChipsInput } from "~/components/ChipsInput";
 
 import { ArrowLeft } from "lucide-react";
 
@@ -26,44 +26,76 @@ export const ZeroChanModal = ({
   const [error, setError] = useState("");
   const [images, setImages] = useState<Image[]>([]);
 
-  const [debouncedQuery, query, setQuery] = useDebounce("", 300);
+  const [queries, setQueries] = useState<string[]>([]);
+  const [debouncedQueries, , setDebouncedQueries] = useDebounce<string[]>([], 300);
 
-  useEffect(
-    () =>
-      setQuery(
-        [
-          // media?.replaceAll(":", ""),
-          // character?.replaceAll(":", ""),
-          character?.replaceAll(":", "") + ` (${media?.replaceAll(":", "")})`,
-        ].join(",")
-      ),
-    [media, character, setQuery]
-  );
-
+  // Initialize queries based on character and media
   useEffect(() => {
-    if (!debouncedQuery) return;
+    const initialQueries = [];
+    if (character) {
+      initialQueries.push(character.replaceAll(":", ""));
+    }
+    if (media && character) {
+      initialQueries.push(`${character.replaceAll(":", "")} (${media.replaceAll(":", "")})`);
+    }
+    if (initialQueries.length > 0) {
+      setQueries(initialQueries);
+    }
+  }, [media, character]);
+
+  // Debounce queries changes
+  useEffect(() => {
+    setDebouncedQueries(queries);
+  }, [queries, setDebouncedQueries]);
+
+  // Fetch images for multiple queries
+  useEffect(() => {
+    if (debouncedQueries.length === 0) {
+      setImages([]);
+      return;
+    }
 
     setImages([]);
     setError("");
 
-    fetch("/api/zerochan", {
-      method: "POST",
-      body: JSON.stringify({ query: debouncedQuery } satisfies Data),
-    })
-      .then((res) => {
-        if (res.status !== 200) {
-          setError(res.statusText);
-          return;
+    // Create promises for all queries
+    const searchPromises = debouncedQueries.map(async (query) => {
+      try {
+        const response = await fetch("/api/zerochan", {
+          method: "POST",
+          body: JSON.stringify({ query } satisfies Data),
+        });
+
+        if (response.status !== 200) {
+          throw new Error(response.statusText);
         }
 
-        return res.json();
-      })
-      .then((data: { images: Image[] }) => {
-        console.log(data);
+        const data: { images: Image[] } = await response.json();
+        return data.images ?? [];
+      } catch (error) {
+        console.error(`Error fetching images for query "${query}":`, error);
+        return [];
+      }
+    });
 
-        setImages(data?.images ?? []);
+    // Execute all searches in parallel
+    Promise.all(searchPromises)
+      .then((resultsArray) => {
+        // Combine all results
+        const allImages = resultsArray.flat();
+        
+        // Remove duplicates based on image ID
+        const uniqueImages = allImages.filter((image, index, array) => 
+          array.findIndex(img => img.id === image.id) === index
+        );
+
+        setImages(uniqueImages);
+      })
+      .catch((error) => {
+        console.error("Error in parallel search:", error);
+        setError("Failed to search images");
       });
-  }, [debouncedQuery]);
+  }, [debouncedQueries]);
 
   return (
     <>
@@ -74,11 +106,11 @@ export const ZeroChanModal = ({
         <ArrowLeft className={"w-[24px] h-[24px]"} />
       </div>
 
-      <TextInput
+      <ChipsInput
         className="max-h-[48px]"
         placeholder={i18n("search")}
-        onInput={(value) => setQuery(value)}
-        value={query}
+        onChange={setQueries}
+        value={queries}
       />
 
       <div className={"flex flex-wrap grow justify-center gap-4"}>
