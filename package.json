@@ -13,7 +13,7 @@
     "@google/genai": "^1.16.0",
     "@icons-pack/react-simple-icons": "^13.7.0",
     "@sentry/nextjs": "^10.8.0",
-    "axios": "^1.13.5",
+    "axios": "^1.15.2",
     "bson": "^6.10.4",
     "google-auth-library": "^10.3.0",
     "lucide-react": "^0.542.0",
